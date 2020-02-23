@@ -4,7 +4,7 @@
     android:layout_width="260dp"
     android:layout_height="210dp"
     android:orientation="horizontal"
-    android:rotation="90"
+    android:rotation="0"
     android:src="@drawable/ap_creative_stock_header">
 
 </ImageView>
