@@ -122,7 +122,6 @@ class HelloSceneformActivity : AppCompatActivity() {
             //1 / 0
         //}
 
-
     }
 
     companion object {

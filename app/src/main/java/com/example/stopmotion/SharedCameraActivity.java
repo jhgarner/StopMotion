@@ -89,6 +89,7 @@ import com.google.ar.core.TrackingState;
 //import com.google.ar.core.examples.java.common.rendering.PlaneRenderer;
 //import com.google.ar.core.examples.java.common.rendering.PointCloudRenderer;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
+import com.google.ar.core.exceptions.SessionPausedException;
 import com.google.ar.core.exceptions.UnavailableException;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.flatbuffers.FlatBufferBuilder;
@@ -311,6 +312,7 @@ public class SharedCameraActivity extends AppCompatActivity
         public void onActive(@NonNull CameraCaptureSession session) {
           Log.d(TAG, "Camera capture session active.");
           if (arMode && !arcoreActive) {
+              System.out.println("==========================LOADING ARCORE");
             resumeARCore();
           }
           synchronized (SharedCameraActivity.this) {
@@ -424,6 +426,9 @@ public class SharedCameraActivity extends AppCompatActivity
 
     // Switch to allow pausing and resuming of ARCore.
     Switch arcoreSwitch = findViewById(R.id.arcore_switch);
+    //if (sharedSession != null) {
+      //resumeARCore();
+    //}
     // Ensure initial switch position is set based on initial value of `arMode` variable.
     arcoreSwitch.setChecked(arMode);
     arcoreSwitch.setOnCheckedChangeListener(
@@ -441,7 +446,14 @@ public class SharedCameraActivity extends AppCompatActivity
         });
 
     messageSnackbarHelper.setMaxLines(4);
-    updateSnackbarMessage();
+    //updateSnackbarMessage();
+
+    Toast.makeText(
+            getApplicationContext(),
+            "Move the phone then tap the center of the scene",
+            Toast.LENGTH_LONG)
+            .show();
+
   }
 
   private synchronized void waitUntilCameraCaptureSessionIsActive() {
@@ -649,6 +661,8 @@ public class SharedCameraActivity extends AppCompatActivity
         ImageReader.newInstance(
             desiredCpuImageSize.getWidth(),
             desiredCpuImageSize.getHeight(),
+                //desiredCpuImageSize.getWidth(),
+                //desiredCpuImageSize.getHeight(),
             ImageFormat.YUV_420_888,
                 //ImageFormat.YUV_420_888,
             //ImageFormat.RGB_565,
@@ -805,7 +819,7 @@ public class SharedCameraActivity extends AppCompatActivity
           takePhoto = false;
           runOnUiThread(() -> Toast.makeText(
                   getApplicationContext(),
-                  "Took Photo",
+                  "Took Photo. Move the camera back then move it back through the cube to take a picture.",
                   Toast.LENGTH_SHORT)
                   .show());
         }
@@ -963,7 +977,12 @@ public class SharedCameraActivity extends AppCompatActivity
     }
 
     // Perform ARCore per-frame update.
-    Frame frame = sharedSession.update();
+    Frame frame = null;
+    try {
+        frame = sharedSession.update();
+      } catch (SessionPausedException e){
+      return;
+    }
     Camera camera = frame.getCamera();
 
     // ARCore attached the surface to GL context using the texture ID we provided
@@ -1055,8 +1074,8 @@ public class SharedCameraActivity extends AppCompatActivity
             if (!readyToTake) {
               runOnUiThread(() -> Toast.makeText(
                       getApplicationContext(),
-                      "Ready to take!",
-                      Toast.LENGTH_SHORT)
+                      "Move the camera back through the cube to take a picture",
+                      Toast.LENGTH_LONG)
                       .show());
             }
           readyToTake = true;
@@ -1105,6 +1124,19 @@ public class SharedCameraActivity extends AppCompatActivity
           Anchor anchor = hit.createAnchor();
           scenePos = anchor.getPose();
           float[] cPos = cameraPos.transformPoint(new float[]{0.0f, 0.0f, 0.0f});
+
+          runOnUiThread(() -> Toast.makeText(
+                  getApplicationContext(),
+                  "Move the camera back then move it back through the cube to take a picture.",
+                  Toast.LENGTH_SHORT)
+                  .show());
+          //runOnUiThread(
+                  //() ->
+                          //Toast.makeText(
+                                  //getApplicationContext(),
+                                  //"Move the camera back then forward",
+                                  //Toast.LENGTH_LONG)
+                                  //.show());
 
           //println("===========")
           //for (a in anchors) {
@@ -1188,5 +1220,10 @@ public class SharedCameraActivity extends AppCompatActivity
         return false;
     }
     return true;
+  }
+
+  public void onBackPressed() {
+    pauseARCore();
+    super.onBackPressed();
   }
 }
