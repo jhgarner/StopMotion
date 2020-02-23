@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
         editorBtn.setOnClickListener {
             val intent = Intent(this, VideoViewer::class.java)
             startActivity(intent)

@@ -28,8 +28,6 @@ class PlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.player_activity)
 
-        // TODO need to get a File dir that is a path to the directory
-        // where the images are kept
         val file: String = getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.absolutePath + "/Project1/"
         val dir = File(file)
         val arr: ArrayList<File> = createFileArray(dir)
@@ -39,15 +37,6 @@ class PlayerActivity : AppCompatActivity() {
         playBtn.setOnClickListener {
 
             playFileArray(arr)
-
-        }
-
-        backBtn.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
-
-        infoBtn.setOnClickListener {
 
         }
 
