@@ -36,36 +36,45 @@
         android:id="@+id/editorBtn"
         android:layout_width="161dp"
         android:layout_height="68dp"
-        android:layout_marginStart="124dp"
-        android:layout_marginTop="288dp"
         android:layout_marginBottom="50dp"
         android:text="Editor"
         app:layout_constraintBottom_toTopOf="@+id/cameraBtn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.007"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.985" />
 
     <Button
         android:id="@+id/cameraBtn"
         android:layout_width="161dp"
         android:layout_height="68dp"
-        android:layout_marginStart="124dp"
-        android:layout_marginTop="384dp"
         android:text="Camera"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/appBarLayout"
+        app:layout_constraintVertical_bias="0.684" />
 
     <Button
         android:id="@+id/playerBtn"
         android:layout_width="161dp"
         android:layout_height="68dp"
-        android:layout_marginStart="125dp"
-        android:layout_marginTop="490dp"
-        android:layout_marginBottom="173dp"
         android:text="Player"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.879" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="244dp"
+        android:layout_height="199dp"
+        app:layout_constraintBottom_toTopOf="@+id/editorBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
