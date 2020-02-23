@@ -25,6 +25,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
+import android.view.View
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -59,8 +61,9 @@ class HelloSceneformActivity : AppCompatActivity() {
             Toast.LENGTH_LONG
         )
             .show()
-        arFragment = supportFragmentManager.findFragmentById(R.id.ux_fragment) as ArFragmentGuide?
+        //arFragment = supportFragmentManager.findFragmentById(R.id.ux_fragment) as ArFragmentGuide?
         arFragment!!.messageBox = findViewById<TextView>(R.id.text_view)
+        val session = arFragment!!.arSceneView.session
         // When you build a Renderable, Sceneform loads its resources in the background while returning
 // a CompletableFuture. Call thenAccept(), handle(), or check isDone() before calling get().
         ModelRenderable.builder()
@@ -110,8 +113,15 @@ class HelloSceneformActivity : AppCompatActivity() {
                 andy.setParent(anchorNode)
                 andy.renderable = andyRenderable
                 andy.select()
+
+                //(findViewById<ImageButton>(R.id.imageButton))!!.visibility = View.VISIBLE
             }
         }
+
+        //(findViewById<ImageButton>(R.id.imageButton))!!.setOnClickListener {
+            //1 / 0
+        //}
+
 
     }
 

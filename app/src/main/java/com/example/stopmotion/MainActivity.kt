@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         cameraBtn.setOnClickListener {
-            val intent = Intent(this, HelloSceneformActivity::class.java)
+            val intent = Intent(this, SharedCameraActivity::class.java)
             startActivity(intent)
         }
         playerBtn.setOnClickListener {

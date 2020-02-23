@@ -18,30 +18,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HelloSceneformActivity">
+    tools:context=".SharedCameraActivity">
 
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.google.ar.core.examples.java.sharedcamera.SharedCameraActivity">
 
-  <androidx.constraintlayout.widget.ConstraintLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent">
-      <fragment
-          android:id="@+id/ux_fragment"
-          android:name="com.example.stopmotion.ArFragmentGuide"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent" />
+        <android.opengl.GLSurfaceView
+            android:id="@+id/glsurfaceview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top" />
 
-    <TextView
-        android:id="@+id/text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="124dp"
-        android:background="@color/cardview_light_background"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="@+id/ux_fragment"
-        app:layout_constraintEnd_toEndOf="@+id/ux_fragment"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="@+id/ux_fragment" />
+        <!-- Layout is set to `horizontal` at runtime whenever display orientation is landscape. -->
+        <LinearLayout
+            android:id="@+id/image_text_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical">
 
-  </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="#80000000"
+                android:padding="5dp"
+                android:layout_margin="20dp"
+                android:text="Status messages appear here at runtime." />
+
+        </LinearLayout>
+
+        <Switch
+            android:id="@+id/arcore_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="22dp"
+            android:switchPadding="8dp"
+            android:text="AR" />
+
+    </RelativeLayout>
 
 </FrameLayout>
