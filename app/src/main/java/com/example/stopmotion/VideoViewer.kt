@@ -8,10 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.NonNull
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_video_viewer.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MyAdapter(private val myDataset: Array<String>) :
         RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
@@ -61,6 +65,25 @@ class VideoViewer : Activity() {
         adapter = RecyclerAdapter(photosList)
         findViewById<RecyclerView>(R.id.images_display).adapter = adapter
 
+        var helper : ItemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
+
+            override fun onMove(@NonNull recyclerView : RecyclerView, @NonNull dragged : RecyclerView.ViewHolder, @NonNull target : RecyclerView.ViewHolder): Boolean {
+
+                var position_dragged : Int = dragged.getAdapterPosition()
+                var position_target : Int = target.getAdapterPosition()
+
+                Collections.swap(photosList, position_dragged, position_target)
+
+                adapter.notifyItemMoved(position_dragged,position_target)
+
+                return false
+            }
+
+            override fun onSwiped(@NonNull viewHolder : RecyclerView.ViewHolder, i: Int){
+
+            }
+        })
+        helper.attachToRecyclerView(findViewById<RecyclerView>(R.id.images_display))
         //viewManager = LinearLayoutManager(this)
         //viewAdapter = MyAdapter(arrayOf("One", "Two", "Three"))
 
