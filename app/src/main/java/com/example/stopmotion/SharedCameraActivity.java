@@ -229,6 +229,9 @@ public class SharedCameraActivity extends AppCompatActivity
 
   Pose cameraPos = null;
   Pose scenePos = null;
+  int latestPhoto = 0;
+  boolean takePhoto = false;
+  boolean readyToTake = false;
 
   private static class ColoredAnchor {
     public final Anchor anchor;
@@ -372,6 +375,28 @@ public class SharedCameraActivity extends AppCompatActivity
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+
+    //String imageFileName = "JPEG_" + "J" + "_";
+    //String currentPhotoPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath() + "/T.jpg";
+    String currentPhotoPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath() + "/Project1";
+
+    File directory = new File(currentPhotoPath);
+    if (!directory.exists()) {
+      directory.mkdirs();
+    }
+
+    File[] files = directory.listFiles();
+
+    for (File f: files) {
+      String name = f.getName();
+      name = name.split("\\.")[0];
+      int currentN = Integer.valueOf(name);
+      if (currentN > latestPhoto) {
+        latestPhoto = currentN;
+      }
+    }
+
     setContentView(R.layout.activity_ux);
 
     Bundle extraBundle = getIntent().getExtras();
@@ -757,25 +782,33 @@ public class SharedCameraActivity extends AppCompatActivity
 
 
     //YuvImage yuv = new YuvImage(byteArray, image.getFormat(), image.getWidth(), image.getHeight(), null);
-    arMode = true;
+    //arMode = true;
     //resumeARCore();
     //converting to JPEG
     byte[] jpegData = ImageUtil.imageToByteArray(image);
     //write to file (for example ..some_path/frame.jpg)
     BufferedOutputStream bos = null;
     try {
-      //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-      String imageFileName = "JPEG_" + "J" + "_";
-      String currentPhotoPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath() + "/T.jpg";
+        if (takePhoto) {
+          //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+          String currentPhotoPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath() + "/Project1/" + (++latestPhoto);
 
-      // Save a file: path for use with ACTION_VIEW intents
-      //String currentPhotoPath = imageN.getAbsolutePath();
-      System.out.println("===================");
-      System.out.println(currentPhotoPath);
-      bos = new BufferedOutputStream(new FileOutputStream(currentPhotoPath));
-      bos.write(jpegData);
-      bos.flush();
-      bos.close();
+          // Save a file: path for use with ACTION_VIEW intents
+          //String currentPhotoPath = imageN.getAbsolutePath();
+          System.out.println("===================");
+          System.out.println(currentPhotoPath);
+          bos = new BufferedOutputStream(new FileOutputStream(currentPhotoPath));
+          bos.write(jpegData);
+          bos.flush();
+          bos.close();
+
+          takePhoto = false;
+          runOnUiThread(() -> Toast.makeText(
+                  getApplicationContext(),
+                  "Took Photo",
+                  Toast.LENGTH_SHORT)
+                  .show());
+        }
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -1008,7 +1041,28 @@ public class SharedCameraActivity extends AppCompatActivity
         virtualObjectShadow.updateModelMatrix(anchorMatrix, scaleFactor);
         virtualObject.draw(viewmtx, projmtx, colorCorrectionRgba, new float[]{0.0f, 1.0f, 0.0f, 0.5f});
         virtualObjectShadow.draw(viewmtx, projmtx, colorCorrectionRgba, new float[]{0.0f, 1.0f, 0.0f, 0.5f});
+
+        float[] camPoint = cameraPos.transformPoint(new float[]{0, 0, 0});
+        float[] newCamPoint = camera.getPose().transformPoint(new float[]{0, 0, 0});
+        float isRotatedf = Math.abs(cameraPos.qx() - camera.getPose().qx()) + Math.abs(cameraPos.qy() - camera.getPose().qy()) + Math.abs(cameraPos.qy() - camera.getPose().qz()) + Math.abs(cameraPos.qw() - camera.getPose().qw());
+        boolean isRotated = isRotatedf < 0.5;
+        if (Math.abs(camPoint[0] - newCamPoint[0]) + Math.abs(camPoint[1] - newCamPoint[1]) + Math.abs(camPoint[2] - newCamPoint[2]) < 0.1 && isRotated) {
+          if (readyToTake) {
+            takePhoto = true;
+          }
+          readyToTake = false;
+        } else {
+            if (!readyToTake) {
+              runOnUiThread(() -> Toast.makeText(
+                      getApplicationContext(),
+                      "Ready to take!",
+                      Toast.LENGTH_SHORT)
+                      .show());
+            }
+          readyToTake = true;
+        }
       }
+
   }
 
   // Handle only one tap per frame, as taps are usually low frequency compared to frame rate.
