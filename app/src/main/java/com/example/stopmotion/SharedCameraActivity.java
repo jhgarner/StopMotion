@@ -19,6 +19,7 @@ package com.example.stopmotion;
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
+import android.graphics.YuvImage;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -34,6 +35,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ConditionVariable;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 //import android.support.annotation.NonNull;
@@ -52,6 +54,7 @@ import android.widget.Toast;
 import com.example.stopmotion.common.helpers.CameraPermissionHelper;
 import com.example.stopmotion.common.helpers.DisplayRotationHelper;
 import com.example.stopmotion.common.helpers.FullScreenHelper;
+import com.example.stopmotion.common.helpers.ImageUtil;
 import com.example.stopmotion.common.helpers.SnackbarHelper;
 import com.example.stopmotion.common.helpers.TapHelper;
 import com.example.stopmotion.common.helpers.TrackingStateHelper;
@@ -69,6 +72,7 @@ import com.google.ar.core.Plane;
 import com.google.ar.core.Point;
 import com.google.ar.core.Point.OrientationMode;
 import com.google.ar.core.PointCloud;
+import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.SharedCamera;
 import com.google.ar.core.Trackable;
@@ -86,16 +90,29 @@ import com.google.ar.core.TrackingState;
 //import com.google.ar.core.examples.java.common.rendering.PointCloudRenderer;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.UnavailableException;
+import com.google.ar.sceneform.AnchorNode;
+import com.google.flatbuffers.FlatBufferBuilder;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 /**
  * This is a simple example that demonstrates how to use the Camera2 API while sharing camera access
@@ -119,7 +136,7 @@ public class SharedCameraActivity extends AppCompatActivity
   private static final String TAG = SharedCameraActivity.class.getSimpleName();
 
   // Whether the app is currently in AR mode. Initial value determines initial state.
-  private boolean arMode = false;
+  private boolean arMode = true;
 
   // Whether the surface texture has been attached to the GL context.
   boolean isGlAttached;
@@ -209,6 +226,9 @@ public class SharedCameraActivity extends AppCompatActivity
 
   // A check mechanism to ensure that the camera closed properly so that the app can safely exit.
   private final ConditionVariable safeToExitApp = new ConditionVariable();
+
+  Pose cameraPos = null;
+  Pose scenePos = null;
 
   private static class ColoredAnchor {
     public final Anchor anchor;
@@ -358,6 +378,8 @@ public class SharedCameraActivity extends AppCompatActivity
     if (extraBundle != null && 1 == extraBundle.getShort(AUTOMATOR_KEY, AUTOMATOR_DEFAULT)) {
       automatorRun.set(true);
     }
+    requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE}, 1);
+
 
     // GL surface view that renders camera preview image.
     surfaceView = findViewById(R.id.glsurfaceview);
@@ -603,8 +625,11 @@ public class SharedCameraActivity extends AppCompatActivity
             desiredCpuImageSize.getWidth(),
             desiredCpuImageSize.getHeight(),
             ImageFormat.YUV_420_888,
+                //ImageFormat.YUV_420_888,
+            //ImageFormat.RGB_565,
             2);
     cpuImageReader.setOnImageAvailableListener(this, backgroundHandler);
+
 
     // When ARCore is running, make sure it also updates our CPU image surface.
     sharedCamera.setAppSurfaces(this.cameraId, Arrays.asList(cpuImageReader.getSurface()));
@@ -698,6 +723,7 @@ public class SharedCameraActivity extends AppCompatActivity
   @Override
   public void onFrameAvailable(SurfaceTexture surfaceTexture) {
     // Log.d(TAG, "onFrameAvailable()");
+      //surfaceTexture.
   }
 
   // CPU image reader callback.
@@ -708,6 +734,53 @@ public class SharedCameraActivity extends AppCompatActivity
       Log.w(TAG, "onImageAvailable: Skipping null image.");
       return;
     }
+
+
+    //android.media.Image.Plane[] planes = image.getPlanes();
+
+    //int totalSize = 0;
+    //int[] strides = new int[image.getPlanes()[0].]
+    //for (int i = 0; i < planes.length; i++) {
+        //totalSize += planes[i].getBuffer().array().length;
+    //}
+
+    //byte[] byteArray = new byte[totalSize];
+
+    //int n = 0;
+    //for (int i = 0; i < planes.length; i++) {
+      //for (int j = 0; j < planes[i].getBuffer().array().length; j++) {
+        //byteArray[n] = planes[i].getBuffer().array()[j];
+        //n++;
+      //}
+    //}
+
+
+
+    //YuvImage yuv = new YuvImage(byteArray, image.getFormat(), image.getWidth(), image.getHeight(), null);
+    arMode = true;
+    //resumeARCore();
+    //converting to JPEG
+    byte[] jpegData = ImageUtil.imageToByteArray(image);
+    //write to file (for example ..some_path/frame.jpg)
+    BufferedOutputStream bos = null;
+    try {
+      //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+      String imageFileName = "JPEG_" + "J" + "_";
+      String currentPhotoPath = getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath() + "/T.jpg";
+
+      // Save a file: path for use with ACTION_VIEW intents
+      //String currentPhotoPath = imageN.getAbsolutePath();
+      System.out.println("===================");
+      System.out.println(currentPhotoPath);
+      bos = new BufferedOutputStream(new FileOutputStream(currentPhotoPath));
+      bos.write(jpegData);
+      bos.flush();
+      bos.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    //yuv.
+    //image.
 
     image.close();
     cpuImagesProcessed++;
@@ -915,20 +988,27 @@ public class SharedCameraActivity extends AppCompatActivity
 
     // Visualize anchors created by touch.
     float scaleFactor = 1.0f;
-    for (ColoredAnchor coloredAnchor : anchors) {
-      if (coloredAnchor.anchor.getTrackingState() != TrackingState.TRACKING) {
-        continue;
-      }
+    //for (ColoredAnchor coloredAnchor : anchors) {
+      //if (coloredAnchor.anchor.getTrackingState() != TrackingState.TRACKING) {
+        //continue;
+      //}
       // Get the current pose of an Anchor in world space. The Anchor pose is updated
       // during calls to sharedSession.update() as ARCore refines its estimate of the world.
-      coloredAnchor.anchor.getPose().toMatrix(anchorMatrix, 0);
+      //coloredAnchor.anchor.getPose().toMatrix(anchorMatrix, 0);
 
       // Update and draw the model and its shadow.
-      virtualObject.updateModelMatrix(anchorMatrix, scaleFactor);
-      virtualObjectShadow.updateModelMatrix(anchorMatrix, scaleFactor);
-      virtualObject.draw(viewmtx, projmtx, colorCorrectionRgba, coloredAnchor.color);
-      virtualObjectShadow.draw(viewmtx, projmtx, colorCorrectionRgba, coloredAnchor.color);
-    }
+      ////virtualObject.updateModelMatrix(anchorMatrix, scaleFactor);
+      //virtualObjectShadow.updateModelMatrix(anchorMatrix, scaleFactor);
+      //virtualObject.draw(viewmtx, projmtx, colorCorrectionRgba, coloredAnchor.color);
+      //virtualObjectShadow.draw(viewmtx, projmtx, colorCorrectionRgba, coloredAnchor.color);
+    //}
+      if (cameraPos != null) {
+        cameraPos.toMatrix(anchorMatrix, 0);
+        virtualObject.updateModelMatrix(anchorMatrix, scaleFactor);
+        virtualObjectShadow.updateModelMatrix(anchorMatrix, scaleFactor);
+        virtualObject.draw(viewmtx, projmtx, colorCorrectionRgba, new float[]{0.0f, 1.0f, 0.0f, 0.5f});
+        virtualObjectShadow.draw(viewmtx, projmtx, colorCorrectionRgba, new float[]{0.0f, 1.0f, 0.0f, 0.5f});
+      }
   }
 
   // Handle only one tap per frame, as taps are usually low frequency compared to frame rate.
@@ -965,10 +1045,39 @@ public class SharedCameraActivity extends AppCompatActivity
             objColor = DEFAULT_COLOR;
           }
 
+
+          cameraPos = camera.getPose();
+          // Create the Anchor.
+          Anchor anchor = hit.createAnchor();
+          scenePos = anchor.getPose();
+          float[] cPos = cameraPos.transformPoint(new float[]{0.0f, 0.0f, 0.0f});
+
+          //println("===========")
+          //for (a in anchors) {
+          //val cPos = camera.pose.transformPoint(floatArrayOf(0.0f, 0.0f, 0.0f))
+          //val pos = a.transformPoint(floatArrayOf(0.0f, 0.0f, 0.0f))
+          //Log.w("test", (pos[0].toString() + " " + pos[1].toString() + " " + pos[2].toString()))
+          //Log.w("camera", cPos[0].toString() + " " + cPos[1].toString() + " " + cPos[2].toString())
+          //println( (pos[0].toString() + " " + pos[1].toString() + " " + pos[2].toString()))
+          //println(cPos[0].toString() + " " + cPos[1].toString() + " " + cPos[2].toString())
+          //println("----------")
+          //}
+          //println("===========")
+          //AnchorNode anchorNode = new AnchorNode();
+          //anchorNode.setWorldPosition(new Vector3(cPos[0], cPos[1], cPos[2]))
+          //anchorNode.setWorldRotation(Quaternion(cam!!.qx(), cam!!.qy(), cam!!.qz(), cam!!.qw()))
+          //anchorNode.setParent(arFragment!!.arSceneView.scene)
+          // Create the transformable andy and add it to the anchor.
+          //val andy =
+                  //TransformableNode(arFragment!!.transformationSystem)
+          //andy.setParent(anchorNode)
+          //andy.renderable = andyRenderable
+          //andy.select()
+
           // Adding an Anchor tells ARCore that it should track this position in
           // space. This anchor is created on the Plane to place the 3D model
           // in the correct position relative both to the world and to the plane.
-          anchors.add(new ColoredAnchor(hit.createAnchor(), objColor));
+          //anchors.add(new ColoredAnchor(hit.createAnchor(), objColor));
           break;
         }
       }
