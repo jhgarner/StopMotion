@@ -16,11 +16,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "I hope this works", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
-
         editorBtn.setOnClickListener {
             val intent = Intent(this, VideoViewer::class.java)
             startActivity(intent)
@@ -30,6 +25,11 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, HelloSceneformActivity::class.java)
             startActivity(intent)
         }
+        playerBtn.setOnClickListener {
+            val intent = Intent(this, PlayerActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

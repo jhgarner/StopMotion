@@ -19,22 +19,14 @@
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="   StopMotion"
-            android:textAlignment="textStart"
+            android:layout_height="38dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="12dp"
+            android:text="StopMotion"
             android:textColor="#FFFFFF"
-            android:textSize="32sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </com.google.android.material.appbar.AppBarLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="3dp"
-        android:layout_marginBottom="3dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
 
     <!--Editor Button-->
 
@@ -44,33 +36,36 @@
         android:id="@+id/editorBtn"
         android:layout_width="161dp"
         android:layout_height="68dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="288dp"
         android:layout_marginBottom="50dp"
         android:text="Editor"
         app:layout_constraintBottom_toTopOf="@+id/cameraBtn"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.007"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/cameraBtn"
         android:layout_width="161dp"
         android:layout_height="68dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="384dp"
         android:text="Camera"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/appBarLayout"
-        app:layout_constraintVertical_bias="0.647" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="273dp"
-        android:layout_height="195dp"
-        app:layout_constraintBottom_toTopOf="@+id/editorBtn"
-        app:layout_constraintEnd_toEndOf="parent"
+    <Button
+        android:id="@+id/playerBtn"
+        android:layout_width="161dp"
+        android:layout_height="68dp"
+        android:layout_marginStart="125dp"
+        android:layout_marginTop="490dp"
+        android:layout_marginBottom="173dp"
+        android:text="Player"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
-        app:srcCompat="@drawable/logo" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
