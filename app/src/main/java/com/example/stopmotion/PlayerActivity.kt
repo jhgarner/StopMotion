@@ -69,6 +69,9 @@ class PlayerActivity : AppCompatActivity() {
 
     fun playFileArray(fileArr: ArrayList<File>) {
 
+        fileArr.sortBy {
+            a -> a.name.toInt()
+        }
         val imageView: ImageView = findViewById(R.id.imageView)
         val countInterval: Long = (1200 - (seekBar.progress * 100 + 100)).toLong()
 

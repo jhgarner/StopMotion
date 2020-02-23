@@ -2,7 +2,9 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/image"
     android:layout_width="260dp"
-    android:layout_height="140dp"
+    android:layout_height="210dp"
+    android:orientation="horizontal"
+    android:rotation="90"
     android:src="@drawable/ap_creative_stock_header">
 
 </ImageView>

@@ -1,14 +1,16 @@
 package com.example.stopmotion
 
 import android.content.Intent
+import android.net.Uri
 import android.provider.ContactsContract
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.editor_images_list.view.*
+import java.io.File
 
-class RecyclerAdapter(private val photos: ArrayList<Int>) : RecyclerView.Adapter<RecyclerAdapter.PhotoHolder>(){
+class RecyclerAdapter(private val photos: ArrayList<File>) : RecyclerView.Adapter<RecyclerAdapter.PhotoHolder>(){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerAdapter.PhotoHolder {
         //To change body of created functions use File | Settings | File Templates.
         val inflatedView = parent.inflate(R.layout.editor_images_list, false)
@@ -41,8 +43,8 @@ class RecyclerAdapter(private val photos: ArrayList<Int>) : RecyclerView.Adapter
             //context.startActivity(showPhotoIntent)
         }
 
-        fun bindPhoto(photo: Int) {
-            view.image.setImageResource(photo)
+        fun bindPhoto(photo: File) {
+            view.image.setImageURI(Uri.fromFile(photo))
             //Picasso.with(view.context).load(photo.url).into(view.itemImage)
             //view.itemDate.text = photo.humanDate
             //view.itemDescription.text = photo.explanation
