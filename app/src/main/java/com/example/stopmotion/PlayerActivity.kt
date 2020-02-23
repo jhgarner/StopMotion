@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
-import java.util.Timer
 import kotlin.concurrent.schedule
 
 import kotlinx.android.synthetic.main.player_activity.*
@@ -13,7 +12,13 @@ import androidx.core.app.ComponentActivity
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.net.Uri
 import android.os.CountDownTimer
+import android.os.Environment
+import android.os.Handler
+import androidx.core.os.postDelayed
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.timer
 
 
@@ -25,17 +30,11 @@ class PlayerActivity : AppCompatActivity() {
 
         // TODO need to get a File dir that is a path to the directory
         // where the images are kept
-        //createFileArray(dir)
+        val file: String = getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.absolutePath + "/Project1/"
+        val dir = File(file)
+        val arr: ArrayList<File> = createFileArray(dir)
+        println(file)
 
-        // TODO make this run the functions to play the file
-        val phot1 = R.drawable.test
-        val phot2 = R.drawable.sw2
-        val phot3 = R.drawable.sw1
-
-        val arr: ArrayList<Int> = ArrayList()
-        arr.add(phot1)
-        arr.add(phot2)
-        arr.add(phot3)
 
         playBtn.setOnClickListener {
 
@@ -50,7 +49,6 @@ class PlayerActivity : AppCompatActivity() {
 
         infoBtn.setOnClickListener {
 
-
         }
 
     }
@@ -63,35 +61,38 @@ class PlayerActivity : AppCompatActivity() {
 
         if (listAllFiles != null && listAllFiles.isNotEmpty()) {
             for (currentFile in listAllFiles) {
-                if (currentFile.name.endsWith(".jpeg")) {
                     fileList.add(currentFile.absoluteFile)
-                }
             }
         }
         return fileList
     }
 
-    fun playFileArray(fileArr: ArrayList<Int>) {
+    fun playFileArray(fileArr: ArrayList<File>) {
 
-        var image: Int = 0
         val imageView: ImageView = findViewById(R.id.imageView)
-        val millsInFuture: Long = ((fileArr.size - 1) * 1000).toLong()
+        val countInterval: Long = (1200 - (seekBar.progress * 100 + 100)).toLong()
 
+        var counter: Int = -1
 
-            object : CountDownTimer(millsInFuture, 1000) {
+        fun update(){
 
-                override fun onTick(millisUntilFinished: Long) {
-                    imageView.setImageResource(fileArr[image])
-                    image++
-                }
-
-                override fun onFinish() {
-                    imageView.setImageResource(fileArr[image])
-                }
-            }.start()
-
+            runOnUiThread(Runnable { (imageView.setImageURI(Uri.fromFile(fileArr[counter])))})
+            counter++
         }
 
+        val timer = Timer()
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                update()
+                if(counter >= fileArr.size - 1){
+                    timer.cancel()
+                    timer.purge()
+                }
+            }
+        } , 0, countInterval)
+
+
+    }
 }
 
 
